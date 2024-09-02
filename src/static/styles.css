@@ -73,7 +73,8 @@ main {
     border-radius: 5px;
     border: 1px solid #ccc;
     font-size: 16px;
-    box-sizing: border-box; /* Include padding and border in width */
+    box-sizing: border-box;
+    resize: none; /* Include padding and border in width */
 }
 
 /* Buttons */
@@ -88,7 +89,7 @@ main {
 }
 
 .encrypt-btn {
-    background-color: #ff69b4; /* Pink background */
+    background-color: #e11d41; /* Pink background */
 }
 
 .decrypt-btn {
