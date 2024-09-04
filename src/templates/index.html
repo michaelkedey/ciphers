@@ -4,17 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cipher Tool</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}" />
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
-    <!-- <script src="./script.js"></script> -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
-
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" /> -->
+    <style>
+        .input-field {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .toggle-visibility {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            font-size: 18px;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -22,13 +37,19 @@
     </header>
     <main>
         <section class="container">
+            <!-- Encryption Panel -->
             <section class="panel encryption">
                 <h2 class="heading">Encryption <i class="fas fa-lock" alt="Lock icon"></i></h2>
                 <form id="encrypt_form">
                     <label for="text">Enter text to encrypt in binary:</label>
                     <textarea id="text" name="text" rows="10" class="input-field" required></textarea>
-                    <label for="key">Enter secret encryption key:</label>
-                    <input type="number" id="key" name="key" required class="input-field">
+                    <label for="key">Enter a 4-digit encryption key:</label>
+                    <div style="position: relative;">
+                        <input type="password" id="key" name="key" pattern="\d{4}" title="Please enter exactly 4 digits." required class="input-field" autocomplete="off" maxlength="4">
+                        <button type="button" class="toggle-visibility" onclick="toggleKeyVisibility()">
+                            <i id="visibility-icon" class="fas fa-eye"></i>
+                        </button>
+                    </div>
                     <button type="submit" name="encrypt" value="encrypt" aria-label="Encrypt" class="btn encrypt-btn">
                         Encrypt <i class="fas fa-arrow-right" alt="Arrow right icon"></i>
                     </button>
@@ -38,17 +59,23 @@
                     <textarea readonly class="output-field" id="encrypted_text"></textarea>
                     <button type="button" class="copy-btn" onclick="copyToClipboard($('#encrypted_text').val())">
                         <i class="fas fa-copy"></i> Copy
-                    </button
+                    </button>
                 </div>
             </section>
 
+            <!-- Decryption Panel -->
             <section class="panel decryption">
                 <h2 class="heading">Decryption <i class="fas fa-unlock" alt="Unlock icon"></i></h2>
                 <form id="decrypt-form">
                     <label for="text">Enter binary text to decrypt:</label>
                     <textarea id="text" name="text" rows="10" class="input-field" required></textarea>
-                    <label for="key">Enter secret decryption key:</label>
-                    <input type="number" id="key" name="key" required class="input-field">
+                    <label for="key">Enter a 4-digit decryption key:</label>
+                    <div style="position: relative;">
+                        <input type="password" id="key" name="key" pattern="\d{4}" title="Please enter exactly 4 digits." required class="input-field" autocomplete="off" maxlength="4">
+                        <button type="button" class="toggle-visibility" onclick="toggleKeyVisibility('key-decrypt', 'visibility-icon-decrypt')">
+                            <i id="visibility-icon-decrypt" class="fas fa-eye"></i>
+                        </button>
+                    </div>
                     <button type="submit" name="decrypt" value="decrypt" aria-label="Decrypt" class="btn decrypt-btn">
                         Decrypt <i class="fas fa-arrow-left" alt="Arrow left icon"></i>
                     </button>
@@ -63,6 +90,8 @@
             </section>
         </section>
     </main>
+    
+    <!-- Footer -->
     <footer>
         <p>&copy; 2024 Cipher Tool</p>
         <div class="footer-links">
@@ -74,64 +103,143 @@
             </a>
         </div>
     </footer>
-    
+
+    <!-- Scripts -->
     <script>
-        
+        function toggleKeyVisibility(inputId = 'key', iconId = 'visibility-icon') {
+            var input = document.getElementById(inputId);
+            var icon = document.getElementById(iconId);
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        function copyToClipboard(text) {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(function() {
+                    alert('Copied to clipboard!');
+                }).catch(function(err) {
+                    console.error('Could not copy text: ', err);
+                });
+            } else {
+                var textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    var successful = document.execCommand('copy');
+                    if (successful) {
+                        alert('Copied to clipboard!');
+                    } else {
+                        console.error('Fallback: Could not copy text');
+                    }
+                } catch (err) {
+                    console.error('Fallback: Could not copy text: ', err);
+                }
+                document.body.removeChild(textarea);
+            }
+        }
+
         $(document).ready(function() {
-            // Handle Encryption Form Submission
-            $('#encrypt_form').submit(function(e) {
-                e.preventDefault(); // Prevent default form submission
+            $('#encrypt_form').on('submit', function(event) {
+                event.preventDefault();
                 
-                var formData = $(this).serialize(); // Serialize form data
-                console.log(formData); // Debug: Check what is being sent
-                
+                let text = $('#text').val();
+                let key = $('#key').val();
+
                 $.ajax({
                     type: 'POST',
-                    url: 'http://127.0.0.1:5000/encrypt', // Updated to /encrypt endpoint
-                    data: formData,
-                    success: function(response) {
-                        // Handle the response from the server
-                        console.log(response); // Debug: Check server response
-                        if (response.encrypted_text) {
-                            $('#encrypted_text').val(response.encrypted_text);
-                        } else {
-                            $('#encrypted_text').val(''); // Clear if no encrypted_text
-                        }
+                    url: '/encrypt',
+                    data: {
+                        text: text,
+                        key: key
                     },
-                    error: function(xhr, status, error) {
-                        console.error('Error:', error);
+                    success: function(response) {
+                        $('#encrypted_text').val(response.encryptedText);
+                    },
+                    error: function(error) {
+                        console.error('Error during encryption:', error);
                     }
                 });
             });
 
-            // Handle Decryption Form Submission
-            $('#decrypt-form').submit(function(e) {
-                e.preventDefault(); // Prevent default form submission
+            $('#decrypt-form').on('submit', function(event) {
+                event.preventDefault();
                 
-                var formData = $(this).serialize(); // Serialize form data
-                console.log(formData); // Debug: Check what is being sent
-                
+                let text = $('#text').val();
+                let key = $('#key-decrypt').val();
+
                 $.ajax({
                     type: 'POST',
-                    url: 'http://127.0.0.1:5000/decrypt', // Updated to /decrypt endpoint
-                    data: formData,
-                    success: function(response) {
-                        // Handle the response from the server
-                        console.log(response); // Debug: Check server response
-                        if (response.decrypted_text) {
-                            $('#decrypted_text').val(response.decrypted_text);
-                        } else {
-                            $('#decrypted_text').val(''); // Clear if no decrypted_text
-                        }
+                    url: '/decrypt',
+                    data: {
+                        text: text,
+                        key: key
                     },
-                    error: function(xhr, status, error) {
-                        console.error('Error:', error);
+                    success: function(response) {
+                        $('#decrypted_text').val(response.decryptedText);
+                    },
+                    error: function(error) {
+                        console.error('Error during decryption:', error);
                     }
                 });
             });
         });
-
     </script>
 </body>
 </html>
 
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Visibility Toggle</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .fa-eye, .fa-eye-slash {
+            cursor: pointer;
+            margin-left: -25px;
+        }
+    </style>
+</head>
+<body>
+    <form id="myForm">
+        <div>
+            <input type="password" id="passwordField1" name="key" pattern="\d{4}" title="Please enter exactly 4 digits." required class="input-field" autocomplete="off" maxlength="4">
+            <i id="visibilityIcon1" class="fa fa-eye" onclick="toggleVisibility('passwordField1', 'visibilityIcon1')"></i>
+        </div>
+        <div>
+            <input type="password" id="passwordField2" name="key" pattern="\d{4}" title="Please enter exactly 4 digits." required class="input-field" autocomplete="off" maxlength="4">
+            <i id="visibilityIcon2" class="fa fa-eye" onclick="toggleVisibility('passwordField2', 'visibilityIcon2')"></i>
+        </div>
+        <button type="submit">Submit</button>
+    </form>
+
+    <script>
+        function toggleVisibility(inputId, iconId) {
+            var input = document.getElementById(inputId);
+            var icon = document.getElementById(iconId);
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+    </script>
+</body>
+</html>

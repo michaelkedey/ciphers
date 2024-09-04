@@ -1,0 +1,162 @@
+/* General styling */
+body {
+    font-family: 'Poppins', sans-serif; /* Modern font */
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+
+/* Header Styling */
+header {
+    background-color: #337ab7; /* Blue background */
+    color: white;
+    padding: 0.7rem; /* Reduced padding */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    text-align: center;
+    box-sizing: border-box; /* Ensure padding is included in the width */
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.5rem; /* Reduced font size */
+}
+
+/* Main container */
+main {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Ensure it covers the full viewport height */
+    margin-top: 4rem; /* Adjusted for the smaller header */
+}
+
+/* Container to hold the panels */
+.container {
+    display: flex;
+    flex: 1; /* Flex to take up remaining space */
+    overflow: hidden; /* Prevent overflow and horizontal scrolling */
+}
+
+/* Panel Styling */
+.panel {
+    flex: 1; /* Each panel takes up half of the container */
+    padding: 20px;
+    box-sizing: border-box;
+    overflow: hidden; /* Prevent content from overflowing */
+    max-width: 100%; /* Ensure the panel does not exceed container width */
+}
+
+/* Heading and Footer styling */
+.heading {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #337ab7; /* Blue heading */
+}
+
+.subheading {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #337ab7;
+}
+
+/* Input fields and text areas */
+.input-field, .output-field {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    box-sizing: border-box;
+    resize: none; /* Include padding and border in width */
+}
+
+/* Button for toggling visibility */
+.input-wrapper {
+    position: relative; /* Relative positioning for the toggle button */
+}
+
+.toggle-visibility {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    font-size: 18px;
+    color: #333;
+}
+
+/* Buttons */
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+    margin: 10px 0;
+    font-size: 1rem;
+}
+
+.encrypt-btn {
+    background-color: #e11d41; /* Pink background */
+}
+
+.decrypt-btn {
+    background-color: #33cc33; /* Green background */
+}
+
+.copy-btn {
+    background-color: #4CAF50; /* Green background */
+    color: white;
+    border: none;
+    padding: 10px;
+    margin-top: 10px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+}
+
+.copy-btn i {
+    margin-right: 5px;
+}
+
+.copy-btn:hover {
+    background-color: #45a049; /* Darker green on hover */
+}
+
+/* Footer Styling */
+footer {
+    background-color: #337ab7;
+    color: white;
+    padding: 0.3rem;
+    text-align: center;
+    position: relative;
+}
+
+.footer-links {
+    margin-top: 10px;
+}
+
+.footer-link {
+    color: white;
+    text-decoration: none;
+    margin: 0 10px;
+    font-size: 18px;
+}
+
+.footer-link i {
+    margin-right: 5px;
+}
+
+.footer-link:hover {
+    text-decoration: underline;
+    color: #ccc;
+}
