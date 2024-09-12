@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cipher Tool</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/styles.css') }}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        .input-field {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .toggle-visibility {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            font-size: 18px;
+        }
+
+        .result {
+            margin-top: 20px;
+        }
+
+        .output-field {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            box-sizing: border-box;
+            resize: none;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .encrypt-btn {
+            background-color: #4CAF50;
+        }
+
+        .decrypt-btn {
+            background-color: #2196F3;
+        }
+
+        .copy-btn {
+            background-color: #f1c40f;
+        }
+
+        .copy-btn i {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Cipher Tool</h1>
+    </header>
+    <main>
+        <section class="container">
+            <!-- Encryption Panel -->
+            <section class="panel encryption">
+                <h2 class="heading">Encryption <i class="fas fa-lock" alt="Lock icon"></i></h2>
+                <form id="encrypt_form" action="/encrypt" method="POST">
+                    <label for="text">Enter text to encrypt in binary:</label>
+                    <textarea id="text" name="text" rows="10" class="input-field" required></textarea>
+                    <label for="key">Enter a 4-digit encryption key:</label>
+                    <div style="position: relative;">
+                        <input type="password" id="key" name="key" pattern="\d{4}" title="Please enter exactly 4 digits." required class="input-field" autocomplete="off" maxlength="4">
+                        <button type="button" class="toggle-visibility" onclick="toggleKeyVisibility('key', 'visibility-icon')">
+                            <i id="visibility-icon" class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <button type="submit" name="encrypt" value="encrypt" aria-label="Encrypt" class="btn encrypt-btn">
+                        Encrypt <i class="fas fa-arrow-right" alt="Arrow right icon"></i>
+                    </button>
+                </form>
+                <div class="result">
+                    <h3 class="subheading">Encrypted Text:</h3>
+                    <textarea readonly class="output-field" id="encrypted_text">{{ encrypted_text }}</textarea>
+                    <button type="button" class="copy-btn" onclick="copyToClipboard($('#encrypted_text').val())">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                </div>
+            </section>
+
+            <!-- Decryption Panel -->
+            <section class="panel decryption">
+                <h2 class="heading">Decryption <i class="fas fa-unlock" alt="Unlock icon"></i></h2>
+                <form id="decrypt-form" action="/decrypt" method="POST">
+                    <label for="enc-text">Enter binary text to decrypt:</label>
+                    <textarea id="enc-text" name="enc-text" rows="10" class="input-field" required></textarea>
+                    <label for="key">Enter a 4-digit decryption key:</label>
+                    <div style="position: relative;">
+                        <input type="password" id="dec-key" name="key" pattern="\d{4}" title="Please enter exactly 4 digits." required class="input-field" autocomplete="off" maxlength="4">
+                        <button type="button" class="toggle-visibility" onclick="toggleKeyVisibility('dec-key', 'visibility-icon-decrypt')">
+                            <i id="visibility-icon-decrypt" class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <button type="submit" name="decrypt" value="decrypt" aria-label="Decrypt" class="btn decrypt-btn">
+                        Decrypt <i class="fas fa-arrow-left" alt="Arrow left icon"></i>
+                    </button>
+                </form>
+                <div class="result">
+                    <h3 class="subheading">Decrypted Text:</h3>
+                    <textarea readonly class="output-field" id="decrypted_text">{{ decryption_result }}</textarea>
+                    <button type="button" class="copy-btn" onclick="copyToClipboard($('#decrypted_text').val())">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                </div>
+            </section>
+        </section>
+    </main>
+    
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Cipher Tool</p>
+        <div class="footer-links">
+            <a href="https://www.linkedin.com/in/michaelkedey" target="_blank" class="footer-link">
+                <i class="fab fa-linkedin"></i> LinkedIn
+            </a>
+            <a href="https://github.com/michaelkedey" target="_blank" class="footer-link">
+                <i class="fab fa-github"></i> GitHub
+            </a>
+        </div>
+    </footer>
+
+    <script>
+        function toggleKeyVisibility(inputId, iconId) {
+            var input = document.getElementById(inputId);
+            var icon = document.getElementById(iconId);
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        function copyToClipboard(text) {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(function() {
+                    alert('Copied to clipboard!');
+                }).catch(function(err) {
+                    console.error('Could not copy text: ', err);
+                });
+            } else {
+                var textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    var successful = document.execCommand('copy');
+                    if (successful) {
+                        alert('Copied to clipboard!');
+                    } else {
+                        console.error('Fallback: Could not copy text');
+                    }
+                } catch (err) {
+                    console.error('Fallback: Could not copy text: ', err);
+                }
+                document.body.removeChild(textarea);
+            }
+        }
+
+        function isValidBinary(binaryText) {
+            // Split the input into individual binary strings
+            const binaryStrings = binaryText.split(/\s+/);
+
+            // Validate each binary string
+            for (const binaryString of binaryStrings) {
+                // Check if the binary string contains only 0s and 1s
+                const binaryRegex = /^[01]+$/;
+                if (!binaryRegex.test(binaryString)) {
+                    return false;
+                }
+
+                // Ensure that the length of the binary string is a multiple of 8
+                if (binaryString.length % 8 !== 0) {
+                    return false;
+                }
+            }
+
+            // If all binary strings are valid, return true
+            return true;
+        }
+
+        $(document).ready(function() {
+            $('#encrypt_form').submit(function(e) {
+                e.preventDefault();
+                
+                var formData = {
+                    text: $('#text').val(),
+                    key: $('#key').val()
+                };
+                
+                $.ajax({
+                    type: 'POST',
+                    url: '/encrypt',
+                    data: formData,
+                    success: function(response) {
+                        if (response.encrypted_text) {
+                            $('#encrypted_text').val(response.encrypted_text);
+                        } else {
+                            $('#encrypted_text').val('');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', error);
+                    }
+                });
+            });
+
+                // Handle Decryption Form Submission
+            $('#decrypt-form').submit(function(e) {
+                e.preventDefault(); // Prevent default form submission
+
+                // Get form data
+                var binaryText = $('#enc-text').val();
+                var key = $('#dec-key').val();
+
+                // Validate binary input
+                if (!isValidBinary(binaryText)) {
+                    alert('Please enter valid binary data. Data should be in groups of 8 bits.');
+                    return; // Exit the function if the input is invalid
+                }
+
+                // If validation passes, proceed with AJAX request
+                var formData = {
+                    text: binaryText,
+                    key: key
+                };
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/decrypt',
+                    data: formData,
+                    success: function(response) {
+                        if (response.decrypted_text) {
+                            $('#decrypted_text').val(response.decrypted_text);
+                        } else {
+                            $('#decrypted_text').val(''); // Clear the field if no decrypted text
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', error);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
