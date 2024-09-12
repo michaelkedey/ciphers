@@ -1,4 +1,4 @@
-# ciphers
+# cipher tools for secure comminication
 - this directory contains code for implementing an encryption systemt for secure communication between parties.
 - 
 
